@@ -28,7 +28,7 @@ export default function Home() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  // ALL FUNCTIONS (addOrUpdateTask, deleteTask, set new task)
+  // ALL FUNCTIONS (addOrUpdateTask, deleteTask, set newTask)
   const addOrUpdateTask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
