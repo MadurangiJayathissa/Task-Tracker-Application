@@ -74,7 +74,7 @@ export default function Home() {
     <div className="container mx-auto p-6 max-w-2xl">
       <h1 className="text-3xl font-bold mb-6 text-center">Task Tracker Application</h1>
 
-      {/* Add/Edit Form */}
+      {/*Add/Edit Form */}
       <form onSubmit={addOrUpdateTask} className="mb-8 bg-black p-6 rounded-lg shadow">
         <input
           type="text"
