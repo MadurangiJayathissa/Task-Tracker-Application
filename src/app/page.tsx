@@ -10,13 +10,15 @@ interface Task {
 }
 
 export default function Home() {
-  // ALL STATES 
+
+  // ALL STATES
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  // ALL useEffect HOOKS for localStorage (load tasks on mount, save tasks on can change)
+  
+  // ALL useEffect HOOKS
   useEffect(() => {
     const savedTasks = localStorage.getItem('tasks');
     if (savedTasks) {
@@ -28,7 +30,7 @@ export default function Home() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  // ALL FUNCTIONS (addOrUpdateTask, deleteTask, set newTask)
+  // ALL FUNCTIONS (addOrUpdateTask, deleteTask, newOne.)
   const addOrUpdateTask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
@@ -68,14 +70,15 @@ export default function Home() {
     ));
   };
 
-  // RETURN STATEMENT — UI RENDERING Here THE FORM FROM ADDING AND EDITING TASK
-
+  
+  // RETURN STATEMENT — MUST BE THE LAST THING INSIDE THE FUNCTION
+ 
   return (
     <div className="container mx-auto p-6 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6 text-center">Task Tracker Application</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Task Manager Dashboard</h1>
 
-      {/*Add/Edit Form */}
-      <form onSubmit={addOrUpdateTask} className="mb-8 bg-black p-6 rounded-lg shadow">
+      {/* Add/Edit Form */}
+      <form onSubmit={addOrUpdateTask} className="mb-8 bg-white p-6 rounded-lg shadow">
         <input
           type="text"
           placeholder="Task Title"
@@ -99,7 +102,7 @@ export default function Home() {
 
       {/* Task List */}
       {tasks.length === 0 ? (
-        <p className="text-center text-gray-500">No Any Task Yet!</p>
+        <p className="text-center text-gray-500">No tasks yet. Add one above!</p>
       ) : (
         <ul className="space-y-4">
           {tasks.map((task) => (
@@ -108,7 +111,7 @@ export default function Home() {
               className="bg-white p-4 rounded-lg shadow flex justify-between items-start"
             >
               <div className="flex-1">
-                <h3 className={`font-semibold text-lg ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                <h3 className={`font-semibold text-lg ${task.completed ? 'line-through text-gray-500' : ''}`}>
                   {task.title}
                 </h3>
                 <p className={`text-sm ${task.completed ? 'line-through text-gray-500' : 'text-gray-600'}`}>
@@ -141,7 +144,4 @@ export default function Home() {
       )}
     </div>
   );
-} 
-
-
-
+}  
