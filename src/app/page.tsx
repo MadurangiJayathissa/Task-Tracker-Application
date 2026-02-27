@@ -1,65 +1,147 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  completed: boolean;
+}
 
 export default function Home() {
+  // ALL STATES 
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+
+  // ALL useEffect HOOKS for localStorage (load tasks on mount, save tasks on can change)
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('tasks');
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  // ALL FUNCTIONS (addOrUpdateTask, deleteTask, set new task)
+  const addOrUpdateTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+
+    if (editingTask) {
+      setTasks(tasks.map(task =>
+        task.id === editingTask.id ? { ...task, title, description } : task
+      ));
+      setEditingTask(null);
+    } else {
+      const newTask: Task = {
+        id: Date.now(),
+        title,
+        description,
+        completed: false,
+      };
+      setTasks([...tasks, newTask]);
+    }
+
+    setTitle('');
+    setDescription('');
+  };
+
+  const deleteTask = (id: number) => {
+    setTasks(tasks.filter(task => task.id !== id));
+  };
+
+  const startEditing = (task: Task) => {
+    setTitle(task.title);
+    setDescription(task.description);
+    setEditingTask(task);
+  };
+
+  const toggleComplete = (id: number) => {
+    setTasks(tasks.map(task =>
+      task.id === id ? { ...task, completed: !task.completed } : task
+    ));
+  };
+
+  // RETURN STATEMENT — UI RENDERING Here THE FORM FROM ADDING AND EDITING TASK
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="container mx-auto p-6 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-6 text-center">Task Tracker Application</h1>
+
+      {/* Add/Edit Form */}
+      <form onSubmit={addOrUpdateTask} className="mb-8 bg-black p-6 rounded-lg shadow">
+        <input
+          type="text"
+          placeholder="Task Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+        <textarea
+          placeholder="Task Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600"
+        >
+          {editingTask ? 'Update Task' : 'Add Task'}
+        </button>
+      </form>
+
+      {/* Task List */}
+      {tasks.length === 0 ? (
+        <p className="text-center text-gray-500">No tasks yet. Add one above!</p>
+      ) : (
+        <ul className="space-y-4">
+          {tasks.map((task) => (
+            <li
+              key={task.id}
+              className="bg-white p-4 rounded-lg shadow flex justify-between items-start"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+              <div className="flex-1">
+                <h3 className={`font-semibold text-lg ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                  {task.title}
+                </h3>
+                <p className={`text-sm ${task.completed ? 'line-through text-gray-500' : 'text-gray-600'}`}>
+                  {task.description}
+                </p>
+              </div>
+              <div className="flex space-x-2 ml-4">
+                <button
+                  onClick={() => toggleComplete(task.id)}
+                  className="text-green-500 hover:text-green-700"
+                >
+                  {task.completed ? 'Undo' : 'Complete'}
+                </button>
+                <button
+                  onClick={() => startEditing(task)}
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => deleteTask(task.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
-}
+} 
+
+
+
