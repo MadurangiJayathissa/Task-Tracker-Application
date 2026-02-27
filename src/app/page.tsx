@@ -99,7 +99,7 @@ export default function Home() {
 
       {/* Task List */}
       {tasks.length === 0 ? (
-        <p className="text-center text-gray-500">No tasks yet. Add one above!</p>
+        <p className="text-center text-gray-500">No Any Task Yet!</p>
       ) : (
         <ul className="space-y-4">
           {tasks.map((task) => (
